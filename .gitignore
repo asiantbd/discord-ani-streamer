@@ -1,3 +1,7 @@
+## Custom
+src/config.json
+.secrets/
+
 # Logs
 logs
 *.log
