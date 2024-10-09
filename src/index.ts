@@ -1,6 +1,7 @@
 import {
     Client,
-    StageChannel
+    StageChannel,
+    WebEmbed,
 } from "discord.js-selfbot-v13";
 import {
     command,
@@ -18,11 +19,11 @@ import {
     aniCam
 } from "./commands/cam";
 import {
-    Args,
-    parseArgs
-} from "./commands/util/parse-args";
+    aniSearch
+} from "./commands/ani-search";
 
-const streamer = new Streamer(new Client());
+const client = new Client();
+const streamer = new Streamer(client);
 const _TestHardcodedStreamURL =
     "https://myanime.sharepoint.com/sites/chartlousty/_layouts/15/download.aspx?share=EeGsVmRLf9BEjtspvrqKz60Bm-R4vwrDaG-DpKh-1mYSUA";
 
@@ -52,6 +53,25 @@ streamer.client.on("messageCreate", async (msg) => {
         const stream = streamer.voiceConnection?.streamConnection;
         if (!stream) return;
         streamer.stopStream();
+    } else if (msg.content.startsWith("$ani-search")) {
+        let input = msg.content.split(' ');
+        input.shift();
+        let title = input.join(' ');
+        let result = await aniSearch(title);
+        /*
+         * todo : enhance this so many results can be sown
+         * */
+        let firstTitle = result.data.Page.media[0].title;
+        let firstTitleDesc = 'english: ' + firstTitle.english +
+            '\nnative: ' + firstTitle.native +
+            '\nromaji: ' + firstTitle.romaji;
+        let content = new WebEmbed()
+            .setTitle('Anime Search Results')
+            .setColor('GREEN')
+            .setDescription(firstTitleDesc);
+        msg.channel.send({
+            content: `${WebEmbed.hiddenEmbed}${content}`,
+        });
     }
 });
 
