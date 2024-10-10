@@ -49,5 +49,20 @@ streamer.client.on("messageCreate", async (msg) => {
   }
 });
 
+// reaction event
+streamer.client.on("messageReactionAdd", async (msg, user, burst) => {
+  let embeds = msg.message.embeds;
+  if (embeds.length !== 0) {
+    let title = msg.message.embeds[0].title;
+    let channelId = msg.message.channelId;
+    let channel = msg.message.channel;
+    console.log(channel);
+    await channel.send({
+      content:
+        "**>> Your requested anime `" + title + "` is being processed.**",
+    });
+  }
+});
+
 // login
 streamer.client.login(config.token);
