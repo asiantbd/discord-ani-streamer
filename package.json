@@ -18,8 +18,8 @@
   "scripts": {
     "build": "tsc",
     "start": "bun ./dist/index.js",
-    "check": "npx prettier . --check",
-    "prettier": "npx prettier . --write"
+    "check": "bunx prettier . --check",
+    "prettier": "bunx prettier . --write"
   },
   "author": "",
   "license": "ISC"
