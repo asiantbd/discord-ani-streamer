@@ -1,26 +1,9 @@
-import {
-    Client,
-    StageChannel,
-    WebEmbed,
-} from "discord.js-selfbot-v13";
-import {
-    command,
-    streamLivestreamVideo,
-    MediaUdp,
-    getInputMetadata,
-    inputHasAudio,
-    Streamer,
-} from "@dank074/discord-video-stream";
+import { Client } from "discord.js-selfbot-v13";
+import { command, Streamer } from "@dank074/discord-video-stream";
 import config from "./config.json";
-import {
-    aniStream
-} from "./commands/stream";
-import {
-    aniCam
-} from "./commands/cam";
-import {
-    aniSearch
-} from "./commands/ani-search";
+import { aniStream } from "./commands/stream";
+import { aniCam } from "./commands/cam";
+import { aniSearch } from "./commands/search";
 
 const client = new Client();
 const streamer = new Streamer(client);
@@ -54,24 +37,10 @@ streamer.client.on("messageCreate", async (msg) => {
         if (!stream) return;
         streamer.stopStream();
     } else if (msg.content.startsWith("$ani-search")) {
-        let input = msg.content.split(' ');
+        let input = msg.content.split(" ");
         input.shift();
-        let title = input.join(' ');
-        let result = await aniSearch(title);
-        /*
-         * todo : enhance this so many results can be sown
-         * */
-        let firstTitle = result.data.Page.media[0].title;
-        let firstTitleDesc = 'english: ' + firstTitle.english +
-            '\nnative: ' + firstTitle.native +
-            '\nromaji: ' + firstTitle.romaji;
-        let content = new WebEmbed()
-            .setTitle('Anime Search Results')
-            .setColor('GREEN')
-            .setDescription(firstTitleDesc);
-        msg.channel.send({
-            content: `${WebEmbed.hiddenEmbed}${content}`,
-        });
+        let title = input.join(" ");
+        aniSearch(msg, title);
     }
 });
 
