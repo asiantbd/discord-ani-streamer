@@ -1,13 +1,7 @@
-import {
-    playVideo
-} from "./util/play-video"
-import {
-    parseArgs
-} from "./util/parse-args"
+import { playVideo } from "./util/play-video";
+import { parseArgs } from "./util/parse-args";
 import config from "../config.json";
-import {
-    StageChannel
-} from "discord.js-selfbot-v13";
+import { StageChannel } from "discord.js-selfbot-v13";
 
 /*
  * Parameters
@@ -21,35 +15,35 @@ import {
  *  No response will be returned for the function, but the bot should play the stream.
  * */
 export async function aniStream(streamer: any, msg: any, playbackUrl: string) {
-    const args = parseArgs(msg.content);
-    if (!args) return;
+  const args = parseArgs(msg.content);
+  if (!args) return;
 
-    // get voiche channel from config
-    const voiceChannelId = config.serverOpts.voiceChannelId;
+  // get voiche channel from config
+  const voiceChannelId = config.serverOpts.voiceChannelId;
 
-    if (!voiceChannelId) return;
+  if (!voiceChannelId) return;
 
-    console.log(
-        `Attempting to join voice channel ${msg.guildId}/${voiceChannelId}`,
-    );
-    await streamer.joinVoice(msg.guildId, voiceChannelId);
+  console.log(
+    `Attempting to join voice channel ${msg.guildId}/${voiceChannelId}`,
+  );
+  await streamer.joinVoice(msg.guildId, voiceChannelId);
 
-    const channel = streamer.client.user.voice.channel;
-    if (channel instanceof StageChannel) {
-        await streamer.client.user.voice.setSuppressed(false);
-    }
-    const streamUdpConn = await streamer.createStream({
-        width: config.streamOpts.width,
-        height: config.streamOpts.height,
-        fps: config.streamOpts.fps,
-        bitrateKbps: config.streamOpts.bitrateKbps,
-        maxBitrateKbps: config.streamOpts.maxBitrateKbps,
-        hardwareAcceleratedDecoding: config.streamOpts.hardware_acceleration,
-        videoCodec: config.streamOpts.videoCodec === "H264" ? "H264" : "VP8",
-    });
+  const channel = streamer.client.user.voice.channel;
+  if (channel instanceof StageChannel) {
+    await streamer.client.user.voice.setSuppressed(false);
+  }
+  const streamUdpConn = await streamer.createStream({
+    width: config.streamOpts.width,
+    height: config.streamOpts.height,
+    fps: config.streamOpts.fps,
+    bitrateKbps: config.streamOpts.bitrateKbps,
+    maxBitrateKbps: config.streamOpts.maxBitrateKbps,
+    hardwareAcceleratedDecoding: config.streamOpts.hardware_acceleration,
+    videoCodec: config.streamOpts.videoCodec === "H264" ? "H264" : "VP8",
+  });
 
-    await playVideo(playbackUrl, streamUdpConn);
+  await playVideo(playbackUrl, streamUdpConn);
 
-    streamer.stopStream();
-    return;
+  streamer.stopStream();
+  return;
 }
