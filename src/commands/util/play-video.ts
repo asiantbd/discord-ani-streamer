@@ -4,7 +4,6 @@ import {
     MediaUdp,
     getInputMetadata,
     inputHasAudio,
-    Streamer,
 } from "@dank074/discord-video-stream";
 
 export async function playVideo(video: string, udpConn: MediaUdp) {
