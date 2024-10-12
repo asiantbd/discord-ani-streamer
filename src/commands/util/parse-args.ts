@@ -13,4 +13,9 @@ function parseArgs(message: string): Args | undefined {
   };
 }
 
-export { Args, parseArgs };
+function extractEpisodeCount(input: string): number | null {
+  const match = input.match(/Eps:\s*(\d+)/);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+export { Args, parseArgs, extractEpisodeCount };
