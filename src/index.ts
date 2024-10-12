@@ -4,6 +4,10 @@ import config from "./config.json";
 import { aniStream } from "./commands/stream";
 import { aniCam } from "./commands/cam";
 import { aniSearch } from "./commands/search";
+import {
+  reactAnimeSelection,
+  replyEpisodeSelection,
+} from "./commands/episode-selection";
 
 const client = new Client();
 const streamer = new Streamer(client);
@@ -47,21 +51,22 @@ streamer.client.on("messageCreate", async (msg) => {
     let title = input.join(" ");
     aniSearch(msg, title);
   }
+
+  // Handle Episode Selection from reply message
+  if (msg.reference) {
+    const channel = msg.channel;
+
+    // Only handle reply action from episode selection message
+    if (!msg.reference.messageId) return;
+
+    // Handle reply episode selection
+    replyEpisodeSelection(streamer, channel, msg);
+  }
 });
 
-// reaction event
-streamer.client.on("messageReactionAdd", async (msg, user, burst) => {
-  let embeds = msg.message.embeds;
-  if (embeds.length !== 0) {
-    let title = msg.message.embeds[0].title;
-    let channelId = msg.message.channelId;
-    let channel = msg.message.channel;
-    console.log(channel);
-    await channel.send({
-      content:
-        "**>> Your requested anime `" + title + "` is being processed.**",
-    });
-  }
+// Reaction event to embeds anime title message
+streamer.client.on("messageReactionAdd", async (msg) => {
+  reactAnimeSelection(msg);
 });
 
 // login

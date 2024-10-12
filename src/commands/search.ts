@@ -1,17 +1,19 @@
-import { querySearchAnime } from "./provider/anilist";
+import { querySearchAnilist } from "./provider/anilist";
 import { WebEmbed } from "discord.js-selfbot-v13";
 
 export async function aniSearch(msg: any, title: string) {
   try {
-    let result = await querySearchAnime(title);
+    let result = await querySearchAnilist(title);
     /*
      * todo : enhance this so many results can be sown
      * */
     msg.reply("**>> Anime Search Results :**");
     if (result.data) {
       for (let anime of result.data.Page.media) {
+        let animeSeason = "(" + anime.seasonYear + "-" + anime.season + ") ";
         let animeDesc =
-          "EN: " +
+          animeSeason +
+          "\nEN: " +
           (anime.title.english || "N/A") +
           "\nJP: " +
           (anime.title.native || "N/A") +
@@ -19,14 +21,17 @@ export async function aniSearch(msg: any, title: string) {
           (anime.episodes || "N/A") +
           "\nScore: " +
           (anime.meanScore || "N/A");
-        let animeSeason = "(" + anime.seasonYear + "-" + anime.season + ") ";
         let animeTitle =
           anime.title.romaji || anime.title.native || "Unknown Title";
         let content = new WebEmbed()
-          .setTitle(animeSeason + animeTitle)
+          .setTitle(animeTitle)
           .setColor("GREEN")
           .setDescription(animeDesc)
-          .setImage(anime.coverImage.large || "");
+          .setImage(anime.coverImage.large || "")
+          .setProvider({
+            name: anime.id.toString(),
+            url: "https://anilist.co/anime/" + anime.id,
+          });
         await msg.channel.send({
           content: `${WebEmbed.hiddenEmbed}${content}`,
         });
