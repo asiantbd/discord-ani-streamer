@@ -28,6 +28,8 @@ export async function replyEpisodeSelection(
   const episodeConfirmMessage = await channel.messages.fetch(
     episodeConfirmMessageId,
   );
+  if (!episodeConfirmMessage.reference.messageId) return;
+
   const selectedTitleMessage = await channel.messages.fetch(
     episodeConfirmMessage.reference.messageId,
   );
