@@ -11,7 +11,6 @@ export async function playVideo(video: string, udpConn: MediaUdp) {
 
   try {
     const metadata = await getInputMetadata(video);
-    //console.log(JSON.stringify(metadata.streams));
     includeAudio = inputHasAudio(metadata);
   } catch (e) {
     console.log(e);

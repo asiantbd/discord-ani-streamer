@@ -7,6 +7,7 @@ FROM oven/bun:1-debian AS base
 # used in released images
 RUN apt-get update && apt-get install -y \
     ffmpeg \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
@@ -21,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     make \
     python3 \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 ## ----------------------------------------
@@ -36,6 +38,12 @@ RUN cd /temp/dev && bun install --frozen-lockfile
 RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
+
+# install ani-cli & patched scripts
+RUN mkdir -p /temp/scripts
+COPY scripts/ani-cli-patcher.sh /temp/scripts/
+RUN cd /temp/scripts && wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli -O ./ani-cli && chmod +x ./ani-* && ./ani-cli-patcher.sh
+
 
 ## ----------------------------------------
 ## Prerelease Layer: copy node_modules from temp directory
@@ -53,6 +61,7 @@ RUN bun run build
 ## copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=install /temp/scripts/ani-cli ani-cli
 COPY --from=prerelease /usr/src/app/dist dist
 COPY --from=prerelease /usr/src/app/package.json .
 
